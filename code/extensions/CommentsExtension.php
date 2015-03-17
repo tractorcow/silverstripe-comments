@@ -10,7 +10,7 @@ class CommentsExtension extends DataExtension {
 	
 	public static function get_extra_config($class, $extension, $args = null) {
 		$config = array();
-		
+
 		// if it is attached to the SiteTree then we need to add ProvideComments
 		if(is_subclass_of($class, 'SiteTree') || $class == 'SiteTree') {
 			$config['db'] =  array('ProvideComments' => 'Boolean');
@@ -19,7 +19,7 @@ class CommentsExtension extends DataExtension {
 		return $config;
 	}
 
-	
+
 	/**
 	 * If this extension is applied to a {@link SiteTree} record then
 	 * append a Provide Comments checkbox to allow authors to trigger
@@ -31,12 +31,12 @@ class CommentsExtension extends DataExtension {
 	 */
 	public function updateSettingsFields(FieldList $fields) {
 		if($this->attachedToSiteTree()) {
-			$fields->addFieldToTab('Root.Settings', 
+			$fields->addFieldToTab('Root.Settings',
 				new CheckboxField('ProvideComments', _t('Comment.ALLOWCOMMENTS', 'Allow Comments'))
 			);
 		}
 	}
-	
+
 	/**
 	 * Returns a list of all the comments attached to this record.
 	 *
@@ -53,16 +53,16 @@ class CommentsExtension extends DataExtension {
 
 		// Filter content for unauthorised users
 		if (!($member = Member::currentUser()) || !Permission::checkMember($member, 'CMS_ACCESS_CommentAdmin')) {
-		  
+
 		  // Filter unmoderated comments for non-administrators if moderation is enabled
 		  if (Commenting::get_config_value($this->ownerBaseClass, 'require_moderation') || Commenting::get_config_value($this->ownerBaseClass, 'require_moderation_nonmembers')) {
-		    $list = $list->filter(array(
-		    	'Moderated' => 1,
-		    	'IsSpam' => 0
-		    ));
+			$list = $list->filter(array(
+				'Moderated' => 1,
+				'IsSpam' => 0
+			));
 		  } else {
-		    // Filter spam comments for non-administrators if auto-moderated
-		    $list = $list->filter('IsSpam', 0);
+			// Filter spam comments for non-administrators if auto-moderated
+			$list = $list->filter('IsSpam', 0);
 		  }
 		}
 
@@ -73,17 +73,17 @@ class CommentsExtension extends DataExtension {
 		));
 
 
-		$controller = Controller::curr();	
+		$controller = Controller::curr();
 		$list->setPageStart($controller->request->getVar("commentsstart". $this->owner->ID));
 		$list->setPaginationGetVar("commentsstart". $this->owner->ID);
 
 		return $list;
 	}
-	
+
 	/**
 	 * Comments interface for the front end. Includes the CommentAddForm and the composition
-	 * of the comments display. 
-	 * 
+	 * of the comments display.
+	 *
 	 * To customize the html see templates/CommentInterface.ss or extend this function with
 	 * your own extension.
 	 *
@@ -100,7 +100,7 @@ class CommentsExtension extends DataExtension {
 		}
 
 		$interface = new SSViewer('CommentsInterface');
-		
+
 		// detect whether we comments are enabled. By default if $CommentsForm is included
 		// on a {@link DataObject} then it is enabled, however {@link SiteTree} objects can
 		// trigger comments on / off via ProvideComments
@@ -108,17 +108,17 @@ class CommentsExtension extends DataExtension {
 
 		// do not include the comments on pages which don't have id's such as security pages
 		if($this->owner->ID < 0) return false;
-		
-		$controller = new CommentingController();		
+
+		$controller = new CommentingController();
 		$controller->setOwnerRecord($this->owner);
 		$controller->setBaseClass($this->ownerBaseClass);
 		$controller->setOwnerController(Controller::curr());
 
 		$moderatedSubmitted = Session::get('CommentsModerated');
 		Session::clear('CommentsModerated');
-		
+
 		$form = ($enabled) ? $controller->CommentsForm() : false;
-		
+
 		// a little bit all over the show but to ensure a slightly easier upgrade for users
 		// return back the same variables as previously done in comments
 		return $interface->process(new ArrayData(array(
@@ -133,10 +133,10 @@ class CommentsExtension extends DataExtension {
 			'ModeratedSubmitted'		=> $moderatedSubmitted,
 			'Comments'					=> $this->getComments(),
 			'ThreadedComments'          => Commenting::get_config_value($this->ownerBaseClass, 'thread_comments'),
-            'MaxThreadedCommentDepth'   => Commenting::get_config_value($this->ownerBaseClass, 'maximum_thread_comment_depth')
+			'MaxThreadedCommentDepth'   => Commenting::get_config_value($this->ownerBaseClass, 'maximum_thread_comment_depth')
 		)));
 	}
-	
+
 	/**
 	 * Returns whether this extension instance is attached to a {@link SiteTree} object
 	 *
@@ -144,17 +144,17 @@ class CommentsExtension extends DataExtension {
 	 */
 	public function attachedToSiteTree() {
 		$class = $this->ownerBaseClass;
-		
+
 		return (is_subclass_of($class, 'SiteTree')) || ($class == 'SiteTree');
 	}
-	
+
 	/**
 	 * @deprecated 1.0 Please use {@link CommentsExtension->CommentsForm()}
 	 */
 	public function PageComments() {
 		// This method is very commonly used, don't throw a warning just yet
 		//user_error('$PageComments is deprecated. Please use $CommentsForm', E_USER_WARNING);
-		
+
 		return $this->CommentsForm();
 	}
 }

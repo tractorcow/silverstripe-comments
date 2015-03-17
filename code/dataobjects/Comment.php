@@ -93,10 +93,23 @@ class Comment extends DataObject {
 		
 	}
 
+	/**
+	 * Padding to use for index number
+	 *
+	 * @var int
+	 * @config
+	 */
+	private static $numeric_padding = 5;
 
-	private function paddedNumber($i) {
+	/**
+	 * Pad a number
+	 *
+	 * @param int $i
+	 * @return string
+	 */
+	protected function paddedNumber($i) {
 		// fixme, use config
-		return str_pad($i, 5, '0', STR_PAD_LEFT);
+		return str_pad($i, $this->config()->numeric_padding, '0', STR_PAD_LEFT);
 	}
 	
 	/**
@@ -403,8 +416,6 @@ class Comment extends DataObject {
 			return DBField::create_field("Varchar", Director::absoluteURL($token->addToUrl(sprintf(
 				"CommentingController/viewcomment/%s", 'COMMENTID'
 			))));
-		} else {
-			return 'lolnope';
 		}
 	}
 	
@@ -494,10 +505,16 @@ class Comment extends DataObject {
 	}
 
 	/*
-	Check if this comment can be replied to
-	- check threading is enabled
-	- comment must have been moderated
 	*/
+
+
+	/**
+	 * Check if this comment can be replied to
+	 * - check threading is enabled
+	 * - comment must have been moderated
+	 *
+	 * @return boolean
+	 */
 	public function CanReply() {
 		$threaded = Commenting::get_config_value($this->BaseClass, 'thread_comments');
 		$maxdepth = Commenting::get_config_value($this->BaseClass, 'maximum_thread_comment_depth');

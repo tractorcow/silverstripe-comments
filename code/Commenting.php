@@ -48,7 +48,7 @@ class Commenting {
 	 * Adds commenting to a {@link DataObject}
 	 *
 	 * @param string classname to add commenting to
-	 * @param array $setting Settings. See {@link self::$default_config} for
+	 * @param array $settings Settings. See {@link self::$default_config} for
 	 *			available settings
 	 * 
 	 * @throws InvalidArgumentException

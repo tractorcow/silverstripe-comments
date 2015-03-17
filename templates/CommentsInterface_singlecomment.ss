@@ -17,21 +17,21 @@ $EscapedComment
 </ul><% end_if %>
 
 <% if $ApproveLink || $SpamLink || $HamLink || $DeleteLink %>
-			<ul class="action-links">
-				<% if ApproveLink %>
-					<li><a href="$ApproveLink.ATT" class="approve"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve this comment') %></a></li>
-				<% end_if %>
-				<% if SpamLink %>
-					<li><a href="$SpamLink.ATT" class="spam"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','this comment is spam') %></a></li>
-				<% end_if %>
-				<% if HamLink %>
-					<li><a href="$HamLink.ATT" class="ham"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','this comment is not spam') %></a></li>
-				<% end_if %>
-				<% if DeleteLink %>
-					<li class="last"><a href="$DeleteLink.ATT" class="delete"><% _t('CommentsInterface_singlecomment_ss.REMCOM','remove this comment') %></a></li>
-				<% end_if %>
-			</ul>
+	<ul class="action-links">
+		<% if ApproveLink %>
+			<li><a href="$ApproveLink.ATT" class="approve"><% _t('CommentsInterface_singlecomment_ss.APPROVE', 'approve this comment') %></a></li>
 		<% end_if %>
+		<% if SpamLink %>
+			<li><a href="$SpamLink.ATT" class="spam"><% _t('CommentsInterface_singlecomment_ss.ISSPAM','this comment is spam') %></a></li>
+		<% end_if %>
+		<% if HamLink %>
+			<li><a href="$HamLink.ATT" class="ham"><% _t('CommentsInterface_singlecomment_ss.ISNTSPAM','this comment is not spam') %></a></li>
+		<% end_if %>
+		<% if DeleteLink %>
+			<li class="last"><a href="$DeleteLink.ATT" class="delete"><% _t('CommentsInterface_singlecomment_ss.REMCOM','remove this comment') %></a></li>
+		<% end_if %>
+	</ul>
+<% end_if %>
 </div>
 <% end_if %>
 </div>

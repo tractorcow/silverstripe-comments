@@ -1,6 +1,7 @@
-<% if CommentsEnabled %>
-	<%	require javascript('comments/javascript/commenting.js') %>
-	<%  require css('comments/css/comments.css') %>
+<% require javascript('comments/javascript/commenting.js') %>
+<% require themedCSS('comments', 'comments') %>
+
+<% if $CommentsEnabled %>
 	<div id="$CommentHolderID" class="comments-holder-container">
 		<h4 id="postYourCommentHeader"><% _t('CommentsInterface_ss.POSTCOM','Post your comment') %></h4>
 		

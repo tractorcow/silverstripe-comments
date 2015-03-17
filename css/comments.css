@@ -6,7 +6,7 @@
 
 }
 
-.typography ul.action-links, {
+.typography ul.action-links {
 	display: block;
 	float: none;
 	border: solid red 10px;
