@@ -25,6 +25,7 @@ class CommentsExtension extends DataExtension {
 		'gravatar_rating' => 'g', // gravatar rating. This is the same as the standard default
 		'show_comments_when_disabled' => false, // when comments are disabled should we show older comments (if available)
 		'order_comments_by' => "\"Created\" DESC",
+		'order_replies_by' => false, // Optional sort order for replies. Defaults to same order as order_comments_by
 		'comments_per_page' => 10,
 		'comments_holder_id' => "comments-holder", // id for the comments holder
 		'comment_permalink_prefix' => "comment-", // id prefix for each comment. If needed make this different
@@ -33,6 +34,7 @@ class CommentsExtension extends DataExtension {
 		'html_allowed' => false, // allow for sanitized HTML in comments
 		'html_allowed_elements' => array('a', 'img', 'i', 'b'),
 		'use_preview' => false, // preview formatted comment (when allowing HTML). Requires include_js=true
+		'nested_comments' => true, // enable nested comments
 	);
 
 	public static function get_extra_config($class, $extension, $args = null) {

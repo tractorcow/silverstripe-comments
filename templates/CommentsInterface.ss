@@ -21,7 +21,7 @@
 	
 		<div class="comments-holder">
 			<% if $Comments %>
-				<ul class="comments-list">
+				<ul class="comments-list level-0">
 					<% loop $Comments %>
 						<li class="comment $EvenOdd<% if FirstLast %> $FirstLast <% end_if %> $SpamClass">
 							<% include CommentsInterface_singlecomment %>

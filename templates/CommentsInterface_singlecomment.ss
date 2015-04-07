@@ -28,4 +28,6 @@
 			<% end_if %>
 		</ul>
 	<% end_if %>
+	
+	<% include CommentReplies %>
 <% end_if %>

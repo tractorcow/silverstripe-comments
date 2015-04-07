@@ -15,6 +15,7 @@
  * @property string $SecretToken Secret admin token required to provide moderation links between sessions
  * @method HasManyList ChildComments() List of child comments
  * @method Member Author() Member object who created this comment
+ * @method Comment ParentComment() Parent comment this is a reply to
  * @package comments
  */
 class Comment extends DataObject {
@@ -34,6 +35,11 @@ class Comment extends DataObject {
 
 	private static $has_one = array(
 		"Author" => "Member",
+		"ParentComment" => "Comment",
+	);
+
+	private static $has_many = array(
+		"ChildComments"	=> "Comment"
 	);
 	
 	private static $default_sort = '"Created" DESC';
@@ -471,7 +477,76 @@ class Comment extends DataObject {
 
 		return $gravatar;
 	}
+
+	/**
+	 * Determine if replies are enabled for this instance
+	 *
+	 * @return boolean
+	 */
+	public function getRepliesEnabled() {
+		return $this->getOption('nested_comments');
+	}
+
+	/**
+	 * Returns the list of replies, with spam and unmoderated items excluded, for use in the frontend
+	 *
+	 * @return SS_List
+	 */
+	public function Replies() {
+		// No replies if disabled
+		if(!$this->getRepliesEnabled()) {
+			return new ArrayList();
+		}
+		
+		// Get all non-spam comments
+		$order = $this->getOption('order_replies_by')
+			?: $this->getOption('order_comments_by');
+		$list = $this
+			->ChildComments()
+			->sort($order)
+			->filter('IsSpam', 0);
+
+		// Filter unmoderated comments for non-administrators if moderation is enabled
+		if ($this->getOption('require_moderation')
+			|| $this->getOption('require_moderation_nonmembers')
+		) {
+		    $list = $list->filter('Moderated', 1);
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Returns the list of replies paged, with spam and unmoderated items excluded, for use in the frontend
+	 *
+	 * @return PaginatedList
+	 */
+	public function PagedReplies() {
+		$list = $this->Replies();
+
+		// Add pagination
+		$list = new PaginatedList($list, Controller::curr()->getRequest());
+		$list->setPaginationGetVar('repliesstart'.$this->ID);
+		$list->setPageLength($this->getOption('comments_per_page'));
+
+		return $list;
+	}
+
+
+	/**
+	 * Get the level of this comment, where 1 = the first level
+	 *
+	 * @return int
+	 */
+	public function getLevel() {
+		if($this->getRepliesEnabled()) {
+			$parent = $this->ParentComment();
+			if($parent && $parent->exists()) return $parent->getLevel() + 1;
+		}
+		return 1;
+	}
 }
+
 
 /**
  * Provides the ability to generate cryptographically secure tokens for comment moderation
