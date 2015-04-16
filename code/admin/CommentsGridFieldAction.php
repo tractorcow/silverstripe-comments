@@ -41,21 +41,25 @@ class CommentsGridFieldAction implements GridField_ColumnProvider, GridField_Act
 
 		$field = "";
 
-		$field .= GridField_FormAction::create(
-			$gridField,
-			'CustomAction' . $record->ID,
-			'Mark As Spam',
-			'spam',
-			array('RecordID' => $record->ID)
-		)->Field();
+		if(!$record->IsSpam || !$record->Moderated) {
+			$field .= GridField_FormAction::create(
+				$gridField,
+				'CustomAction' . $record->ID,
+				_t('CommentsGridFieldConfig.MARKASSPAM', 'Mark as spam'),
+				'spam',
+				array('RecordID' => $record->ID)
+			)->Field();
+		}
 
-		$field .= GridField_FormAction::create(
-			$gridField,
-			'CustomAction' . $record->ID,
-			'Mark As Not Spam',
-			'not_spam',
-			array('RecordID' => $record->ID)
-		)->Field();
+		if($record->IsSpam || !$record->Moderated) {
+			$field .= GridField_FormAction::create(
+				$gridField,
+				'CustomAction' . $record->ID,
+				_t('CommentsGridFieldConfig.APPROVE', 'Approve'),
+				'approve',
+				array('RecordID' => $record->ID)
+			)->Field();
+		}
 
 		return $field;
 	}
@@ -64,7 +68,7 @@ class CommentsGridFieldAction implements GridField_ColumnProvider, GridField_Act
 	 * {@inheritdoc}
 	 */
 	public function getActions($gridField) {
-		return array('spam', 'not_spam');
+		return array('spam', 'approve');
 	}
 
 	/**
@@ -73,10 +77,7 @@ class CommentsGridFieldAction implements GridField_ColumnProvider, GridField_Act
 	public function handleAction(GridField $gridField, $actionName, $arguments, $data) {
 		if($actionName == 'spam') {
 			$comment = Comment::get()->byID($arguments["RecordID"]);
-
-			$comment->Moderated = true;
-			$comment->IsSpam = true;
-			$comment->write();
+			$comment->markSpam();
 
 			// output a success message to the user
 			Controller::curr()->getResponse()->setStatusCode(
@@ -85,12 +86,9 @@ class CommentsGridFieldAction implements GridField_ColumnProvider, GridField_Act
 			);
 		}
 
-		if($actionName == 'not_spam') {
+		if($actionName == 'approve') {
 			$comment = Comment::get()->byID($arguments["RecordID"]);
-
-			$comment->Moderated = true;
-			$comment->IsSpam = false;
-			$comment->write();
+			$comment->markApproved();
 
 			// output a success message to the user
 			Controller::curr()->getResponse()->setStatusCode(

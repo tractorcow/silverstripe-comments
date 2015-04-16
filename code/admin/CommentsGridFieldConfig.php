@@ -1,6 +1,7 @@
 <?php
 
 class CommentsGridFieldConfig extends GridFieldConfig_RecordEditor {
+	
 	public function __construct($itemsPerPage = 25) {
 		parent::__construct($itemsPerPage);
 
@@ -22,28 +23,38 @@ class CommentsGridFieldConfig extends GridFieldConfig_RecordEditor {
 
 		// Add bulk option
 		$manager = new GridFieldBulkManager();
-
-		$manager->addBulkAction(
-			'markAsSpam', 'Mark as spam', 'CommentsGridFieldBulkAction_Handlers',
-			array(
-				'isAjax' => true,
-				'icon' => 'cross',
-				'isDestructive' => false
-			)
-		);
-
-		$manager->addBulkAction(
-			'markAsNotSpam', 'Mark as not spam', 'CommentsGridFieldBulkAction_Handlers',
-			array(
-				'isAjax' => true,
-				'icon' => 'cross',
-				'isDestructive' => false
-			)
-		);
+		$this->addSpamAction($manager);
+		$this->addApproveAction($manager);
 
 		$manager->removeBulkAction('bulkEdit');
 		$manager->removeBulkAction('unLink');
 
 		$this->addComponent($manager);
+	}
+
+	protected function addSpamAction($manager) {
+		$manager->addBulkAction(
+			'markAsSpam',
+			_t('CommentsGridFieldConfig.MARKASSPAM', 'Mark as spam'),
+			'CommentsGridFieldBulkAction_Handlers',
+			array(
+				'isAjax' => true,
+				'icon' => 'cross',
+				'isDestructive' => false
+			)
+		);
+	}
+
+	protected function addApproveAction($manager) {
+		$manager->addBulkAction(
+			'markApproved',
+			_t('CommentsGridFieldConfig.APPROVE', 'Approve'),
+			'CommentsGridFieldBulkAction_Handlers',
+			array(
+				'isAjax' => true,
+				'icon' => 'cross',
+				'isDestructive' => false
+			)
+		);
 	}
 }

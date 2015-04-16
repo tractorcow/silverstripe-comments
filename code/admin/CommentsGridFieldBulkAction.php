@@ -16,7 +16,7 @@ class CommentsGridFieldBulkAction_Handlers extends CommentsGridFieldBulkAction {
 	
 	private static $allowed_actions = array(
 		'markAsSpam',
-		'markAsNotSpam',
+		'markApproved',
 	);
 
 	private static $url_handlers = array(
@@ -30,10 +30,7 @@ class CommentsGridFieldBulkAction_Handlers extends CommentsGridFieldBulkAction {
 		
 		foreach($this->getRecords() as $record) {						
 			array_push($ids, $record->ID);
-
-			$record->Moderated = 1;
-			$record->IsSpam = 1;
-			$record->write();
+			$record->markSpam();
 		}
 
 		$response = new SS_HTTPResponse(Convert::raw2json(array(
@@ -52,10 +49,7 @@ class CommentsGridFieldBulkAction_Handlers extends CommentsGridFieldBulkAction {
 
 		foreach($this->getRecords() as $record) {
 			array_push($ids, $record->ID);
-
-			$record->Moderated = 1;
-			$record->IsSpam = 0;
-			$record->write();
+			$record->markApproved();
 		}
 
 		$response = new SS_HTTPResponse(Convert::raw2json(array(
