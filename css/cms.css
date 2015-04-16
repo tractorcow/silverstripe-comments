@@ -1,0 +1,7 @@
+
+.cms .Actions > .float-right,
+.cms .Actions > .float-right:last-child,
+.cms .cms-actions-row > .float-right {
+	float: right;
+	margin-right: 8px;
+}

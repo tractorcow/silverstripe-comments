@@ -7,3 +7,10 @@ only:
 SiteTree:
   comments:
     enabled_cms: true
+---
+Name: commentsadmin
+---
+GridFieldDetailForm_ItemRequest:
+  extensions:
+    - CommentsGridFieldItemRequest
+

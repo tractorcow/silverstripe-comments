@@ -474,6 +474,64 @@ class Comment extends DataObject {
 		$this->write();
 		$this->extend('afterMarkUnapproved');
 	}
+
+	/**
+	 * Customise the CMS field actions
+	 *
+	 * @see CommentsGridFieldItemRequest
+	 *
+	 * @return FieldList
+	 */
+	public function getCMSActions() {
+		Requirements::css('comments/css/cms.css');
+		$canEdit = $this->canEdit();
+		$actions = new FieldList();
+		
+		// Default save button
+		if($canEdit) {
+			$actions->push(FormAction::create('doSave', _t('GridFieldDetailForm.Save', 'Save'))
+				->setUseButtonTag(true)
+				->addExtraClass('ss-ui-action-constructive')
+				->setAttribute('data-icon', 'accept'));
+		}
+
+		if($canEdit && ($this->IsSpam || !$this->Moderated)) {
+			$actions->push(
+				FormAction::create('markApproved', 'Approve')
+					->setUseButtonTag(true)
+					->addExtraClass('ss-ui-action-constructive')
+					->setAttribute('data-icon', 'accept')
+			);
+		}
+
+		// Default delete button
+		if($this->canDelete()) {
+			$actions->push(FormAction::create('doDelete', _t('GridFieldDetailForm.Delete', 'Delete'))
+					->setUseButtonTag(true)
+					->addExtraClass('ss-ui-action-destructive action-delete float-right'));
+		}
+
+		if($canEdit && !$this->IsSpam) {
+			$actions->push(
+				FormAction::create('markSpam', 'Mark as spam')
+					->setUseButtonTag(true)
+					->addExtraClass('ss-ui-action-destructive float-right')
+					->setAttribute('data-icon', 'delete')
+			);
+		}
+		
+		if($canEdit && !$this->IsSpam && $this->Moderated) {
+			$actions->push(
+				FormAction::create('markUnapproved', 'Un-approve')
+					->setUseButtonTag(true)
+					->addExtraClass('float-right')
+					->setAttribute('data-icon', 'back')
+			);
+		}
+		$this->extend('updateCMSActions', $actions);
+		return $actions;
+	}
+
 	/**
 	 * @return string
 	 */
